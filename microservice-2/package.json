@@ -1,7 +1,7 @@
 {
   "name": "microservice-2",
   "description": "Microservice 2",
-  "version": "0.0.1",
+  "version": "0.0.0",
   "private": true,
   "scripts": {
     "start": "node app.js"

@@ -1,9 +1,11 @@
+var fs = require('fs')
 var express = require('express');
 var app = express();
+var version = fs.readFileSync('VERSION', 'utf8').trim();
 
 // Routes
 app.get('/', function(req, res) {
-  res.send('Hello! This is microservice-1 v' + process.env.npm_package_version + '.');
+  res.send('Hello! This is microservice-1 v');
 });
 
 // Listen
