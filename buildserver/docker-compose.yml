@@ -1,7 +1,12 @@
 version: '3'
 
 services:
-  teamcity:
-    image: jetbrainsteamcity-server
+  teamcity-server:
+    image: jetbrains/teamcity-server
     ports:
       - 8111:8111
+  teamcity-agent:
+    image: jetbrains/teamcity-agent
+    environment:
+      - SERVER_URL=http://teamcity-server:8111
+      - TEAMCITY_SERVER_MEM_OPTS=-Xmx2g -XX:ReservedCodeCacheSize=350m

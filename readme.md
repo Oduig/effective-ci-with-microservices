@@ -98,8 +98,10 @@ The downside is that, to support this process, we have to detect changes in fold
 
 Example using Jenkins/TeamCity: TODO
 
-1. To run the build server, cd to `buildserver` and run `docker-compose up -d`.
-2. To start the services, run `docker-compose pull && docker-compose up -d --build`.
+1. To run the build server, cd to `buildserver` and run `docker-compose up -d`. Create an `admin` account and import `teamcity-settings.zip` from the `Administration` menu.
+2. Change the `VERSION` files in both microservices, commit and push the changes.
+3. Wait for the builds to complete.
+4. Download and start the built images with `docker-compose pull && docker-compose up -d`.
 
 ### References
 
