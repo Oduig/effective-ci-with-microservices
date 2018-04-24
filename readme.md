@@ -98,6 +98,9 @@ The downside is that, to support this process, we have to detect changes in fold
 
 Example using Jenkins/TeamCity: TODO
 
+1. To run the build server, cd to `buildserver` and run `docker-compose up -d`.
+2. To start the services, run `docker-compose pull && docker-compose up -d --build`.
+
 ### References
 
 [1] https://12factor.net/codebase

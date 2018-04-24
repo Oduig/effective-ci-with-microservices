@@ -1,7 +1,13 @@
 version: '3'
 
 services:
-  teamcity:
-    image: jetbrains/teamcity-server
+  microservice-1:
+    build:
+      context: microservice-1
     ports:
-      - 8111:8111
+      - 17601:9000
+  microservice-2:
+    build:
+      context: microservice-2
+    ports:
+      - 17602:9000

@@ -3,7 +3,7 @@ var app = express();
 
 // Routes
 app.get('/', function(req, res) {
-  res.send('Hello! This is microservice 1 version ' + process.env['VERSION'] + '.');
+  res.send('Hello! This is microservice-1 v' + process.env.npm_package_version + '.');
 });
 
 // Listen

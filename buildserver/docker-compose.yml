@@ -1,0 +1,7 @@
+version: '3'
+
+services:
+  teamcity:
+    image: jetbrainsteamcity-server
+    ports:
+      - 8111:8111
