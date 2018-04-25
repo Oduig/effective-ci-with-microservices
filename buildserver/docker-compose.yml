@@ -14,6 +14,8 @@ services:
       - SERVER_URL=http://teamcity-server:8111
       - TEAMCITY_SERVER_MEM_OPTS=-Xmx2g -XX:ReservedCodeCacheSize=350m
       - DOCKER_IN_DOCKER=start
+      - DOCKER_OPTS=--insecure-registry docker-registry:5000
+      - DOCKER_HOST=tcp://localhost:2375
     privileged: true
     volumes:
       - docker_volumes:/var/lib/docker
