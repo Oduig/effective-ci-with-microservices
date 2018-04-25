@@ -12,3 +12,7 @@ services:
       - TEAMCITY_SERVER_MEM_OPTS=-Xmx2g -XX:ReservedCodeCacheSize=350m
       - DOCKER_IN_DOCKER=start
     privileged: true
+  docker-registry:
+    image: registry:2
+    ports:
+      - 5000:5000
