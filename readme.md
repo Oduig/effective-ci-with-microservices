@@ -112,7 +112,7 @@ The downside is that, to support this process, we have to detect changes in fold
 
 2. Add a `git` trigger (point it to your fork of this repo).
 
-3. Configure `+:refs/tags/*` as a branch specifier.
+3. Configure `+:release-*` as a branch specifier and check `Use tags as branches`.
 
 4. Add two `Console` build steps with the following script. Make sure you substitute `microservice-2` for the second build.
 
@@ -135,7 +135,7 @@ The downside is that, to support this process, we have to detect changes in fold
 
 3. Configure `+:microservice-1/**` or `+:microservice-2/**` as a VCS trigger rule.
 
-4. Configure `+:refs/head/master` as a branch specifier.
+4. Configure `+:<default>` as a branch specifier.
 
 5. Add a `Console` build step with the following script. Make sure you substitute `microservice-2` for the second build.
 
@@ -164,7 +164,7 @@ The downside is that, to support this process, we have to detect changes in fold
 
 ##### Performing a release build
 
-1. Tag a commit. The name of the tag could include your system-wide release verison, e.g. `myproject-v1` or `sprint-3-release`.
+1. Tag a commit. The name of the tag could include your system-wide release verison, e.g. `release-myproject-v1` or `release-sprint-3`.
 2. Wait for the builds to complete.
 3. Check the `VERSION` file for `microservice-1` and run `docker pull docker-registry:5000/microservice-1:<VERSION>`. The release build should now be pulled.
 
