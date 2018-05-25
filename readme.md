@@ -110,22 +110,24 @@ The downside is that, to support this process, we have to detect changes in fold
 
 6. Go to `Projects` and create a new `Example Project`.
 
-7. Add a `git` trigger (point it to your fork of this repo).
+7. Add two builds, a `Build Microservice 1` and a `Build Microservice 2`. Perform the steps hereafter for both builds.
 
-8. Configure `+:microservice-1/**`as a VCS trigger rule.
+8. Add a `git` trigger (point it to your fork of this repo).
 
-9. Add a `Console` build step with the following script.
+9. Configure `+:microservice-1/**` or `+:microservice-2/**` as a VCS trigger rule.
 
-   ```
-   set -e
-   SERVICE_NAME=microservice-1
-   REGISTRY=docker-registry:5000
-   VERSION=$(sed -r 's/\s+//g' $SERVICE_NAME/VERSION)
-   IMAGE_NAME=$SERVICE_NAME:$VERSION-SNAPSHOT-%build.counter%
-   IMAGE_TAG=$REGISTRY/$IMAGE_NAME
-   docker build $SERVICE_NAME -t $IMAGE_TAG
-   docker push $IMAGE_TAG
-   ```
+10. Add a `Console` build step with the following script. Make sure you substitute `microservice-2` for the second build.
+
+    ```
+    set -e
+    SERVICE_NAME=microservice-1
+    REGISTRY=docker-registry:5000
+    VERSION=$(sed -r 's/\s+//g' $SERVICE_NAME/VERSION)
+    IMAGE_NAME=$SERVICE_NAME:$VERSION-SNAPSHOT-%build.counter%
+    IMAGE_TAG=$REGISTRY/$IMAGE_NAME
+    docker build $SERVICE_NAME -t $IMAGE_TAG
+    docker push $IMAGE_TAG
+    ```
 
 
 
