@@ -2,8 +2,8 @@ version: '3'
 
 services:
   microservice-1:
-    build:
-      context: microservice-1
+    # Fill in the latest version here
+    image: docker-registry:5000/microservice-1:0.0.8-SNAPSHOT-9
     ports:
       - 17601:9000
   microservice-2:

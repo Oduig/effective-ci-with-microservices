@@ -5,7 +5,7 @@ var version = fs.readFileSync('VERSION', 'utf8').trim();
 
 // Routes
 app.get('/', function(req, res) {
-  res.send('Hello! This is microservice-1 v');
+  res.send('Hello! This is microservice-1 v' + version);
 });
 
 // Listen

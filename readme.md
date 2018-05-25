@@ -96,12 +96,47 @@ The downside is that, to support this process, we have to detect changes in fold
 
 ### Proof of concept
 
-Example using Jenkins/TeamCity: TODO
+##### Setting up TeamCity
 
-1. To run the build server, cd to `buildserver` and run `docker-compose up -d`. Create an `admin` account and import `teamcity-settings.zip` from the `Administration` menu.
-2. Change the `VERSION` files in both microservices, commit and push the changes.
-3. Wait for the builds to complete.
+1. Append the `hosts` file to the host mapping in your OS.
+
+2. To run the build server, cd to `buildserver` and run `docker-compose up -d`. 
+
+3. Use the default directory and database settings.
+
+4. Create an `admin` account.
+
+5. Go to `Agents` and authorize the unauthorized agent.
+
+6. Go to `Projects` and create a new `Example Project`.
+
+7. Add a `git` trigger (point it to your fork of this repo).
+
+8. Configure `+:microservice-1/**`as a VCS trigger rule.
+
+9. Add a `Console` build step with the following script.
+
+   ```
+   set -e
+   SERVICE_NAME=microservice-1
+   REGISTRY=docker-registry:5000
+   VERSION=$(sed -r 's/\s+//g' $SERVICE_NAME/VERSION)
+   IMAGE_NAME=$SERVICE_NAME:$VERSION-SNAPSHOT-%build.counter%
+   IMAGE_TAG=$REGISTRY/$IMAGE_NAME
+   docker build $SERVICE_NAME -t $IMAGE_TAG
+   docker push $IMAGE_TAG
+   ```
+
+
+
+##### Trigger a new build
+
+1. Change the `VERSION` files in both microservices, commit and push the changes.
+2. Wait for the builds to complete and check the tag of the newly built image.
+3. Update the image version numbers in `docker-compose.yml`.
 4. Download and start the built images with `docker-compose pull && docker-compose up -d`.
+
+
 
 ### References
 
