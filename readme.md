@@ -125,8 +125,11 @@ The downside is that, to support this process, we have to detect changes in fold
     VERSION=$(sed -r 's/\s+//g' $SERVICE_NAME/VERSION)
     IMAGE_NAME=$SERVICE_NAME:$VERSION-SNAPSHOT-%build.counter%
     IMAGE_TAG=$REGISTRY/$IMAGE_NAME
+    LATEST_TAG=$REGISTRY/$SERVICE_NAME
     docker build $SERVICE_NAME -t $IMAGE_TAG
+    docker tag $IMAGE_TAG $LATEST_TAG
     docker push $IMAGE_TAG
+    docker push $LATEST_TAG
     ```
 
 
