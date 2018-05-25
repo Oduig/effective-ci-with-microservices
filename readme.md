@@ -99,47 +99,81 @@ The downside is that, to support this process, we have to detect changes in fold
 ##### Setting up TeamCity
 
 1. Append the `hosts` file to the host mapping in your OS.
-
 2. To run the build server, cd to `buildserver` and run `docker-compose up -d`. 
-
 3. Use the default directory and database settings.
-
 4. Create an `admin` account.
-
 5. Go to `Agents` and authorize the unauthorized agent.
-
 6. Go to `Projects` and create a new `Example Project`.
+7. Go to the project configuration and add `+:refs/tags/*` as a branch configuration.
 
-7. Add two builds, a `Build Microservice 1` and a `Build Microservice 2`. Perform the steps hereafter for both builds.
+##### Adding a release build
 
-8. Add a `git` trigger (point it to your fork of this repo).
+1. Add a `Release Build`.
 
-9. Configure `+:microservice-1/**` or `+:microservice-2/**` as a VCS trigger rule.
+2. Add a `git` trigger (point it to your fork of this repo).
 
-10. Add a `Console` build step with the following script. Make sure you substitute `microservice-2` for the second build.
+3. Configure `+:refs/tags/*` as a branch specifier.
 
-    ```
-    set -e
-    SERVICE_NAME=microservice-1
-    REGISTRY=docker-registry:5000
-    VERSION=$(sed -r 's/\s+//g' $SERVICE_NAME/VERSION)
-    IMAGE_NAME=$SERVICE_NAME:$VERSION-SNAPSHOT-%build.counter%
-    IMAGE_TAG=$REGISTRY/$IMAGE_NAME
-    LATEST_TAG=$REGISTRY/$SERVICE_NAME
-    docker build $SERVICE_NAME -t $IMAGE_TAG
-    docker tag $IMAGE_TAG $LATEST_TAG
-    docker push $IMAGE_TAG
-    docker push $LATEST_TAG
-    ```
+4. Add two `Console` build steps with the following script. Make sure you substitute `microservice-2` for the second build.
+
+   ```
+   set -e
+   SERVICE_NAME=microservice-1
+   REGISTRY=docker-registry:5000
+   VERSION=$(sed -r 's/\s+//g' $SERVICE_NAME/VERSION)
+   IMAGE_NAME=$SERVICE_NAME:$VERSION
+   IMAGE_TAG=$REGISTRY/$IMAGE_NAME
+   docker build $SERVICE_NAME -t $IMAGE_TAG
+   docker push $IMAGE_TAG
+   ```
+
+##### Adding a development build
+
+1. Add two builds, a `Build Microservice 1` and a `Build Microservice 2`. Perform the steps hereafter for both builds.
+
+2. Add a `git` trigger (reuse the existing VCS setup).
+
+3. Configure `+:microservice-1/**` or `+:microservice-2/**` as a VCS trigger rule.
+
+4. Configure `+:refs/head/master` as a branch specifier.
+
+5. Add a `Console` build step with the following script. Make sure you substitute `microservice-2` for the second build.
+
+   ```
+   set -e
+   SERVICE_NAME=microservice-1
+   REGISTRY=docker-registry:5000
+   VERSION=$(sed -r 's/\s+//g' $SERVICE_NAME/VERSION)
+   IMAGE_NAME=$SERVICE_NAME:$VERSION-SNAPSHOT-%build.counter%
+   IMAGE_TAG=$REGISTRY/$IMAGE_NAME
+   LATEST_TAG=$REGISTRY/$SERVICE_NAME
+   docker build $SERVICE_NAME -t $IMAGE_TAG
+   docker tag $IMAGE_TAG $LATEST_TAG
+   docker push $IMAGE_TAG
+   docker push $LATEST_TAG
+   ```
 
 
-
-##### Trigger a new build
+##### Performing a development build
 
 1. Change the `VERSION` files in both microservices, commit and push the changes.
-2. Wait for the builds to complete and check the tag of the newly built image.
-3. Update the image version numbers in `docker-compose.yml`.
-4. Download and start the built images with `docker-compose pull && docker-compose up -d`.
+2. Wait for the builds to complete.
+3. Download and start the built images with `docker-compose pull && docker-compose up -d`.
+4. If you want, try changing just one of the `VERSION` files and notice that only one build is started.
+
+
+##### Performing a release build
+
+1. Tag a commit. The name of the tag could include your system-wide release verison, e.g. `myproject-v1` or `sprint-3-release`.
+2. Wait for the builds to complete.
+3. Check the `VERSION` file for `microservice-1` and run `docker pull docker-registry:5000/microservice-1:<VERSION>`. The release build should now be pulled.
+
+
+##### Continuous Deployment
+
+Continuous Deployment is the next step in the chain. It should monitor the docker registry and launch new deployments based on a number of custom triggers.
+
+For example, you could create a TeamCity build that pushes a specific major version number to production, or you could add a deploy step to one of the existing builds to always deploy the latest image automatically.
 
 
 
