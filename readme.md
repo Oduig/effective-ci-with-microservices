@@ -1,100 +1,90 @@
 # Effective CI with Microservices
 
-At Trifork Eindhoven, we have several teams developing microservice-based solutions for our customers. While each solution is different in terms of business domain, languages and tools, we observed that the release cycles were very similar. These similarities led us to look for a single, unified flow that we could use for all our projects. 
+At Trifork Eindhoven, we have several teams developing microservice-based solutions for our customers. While each solution is different in terms of business domain, languages and tools, we observed that our release cycles were very similar. These similarities led us to look for a single, unified flow that we could use for all our future projects. 
 
+#### Definitions
 
-
-##### Release cycle
-
-To clear up any misunderstandings, we define the following phases in the release cycle.
+We define the following phases in the release cycle.
 
 - **Development** starts with a ticket. It is implemented and code is pushed to version control (VCS). 
-- **Continuous Integration** polls version control. Certain branches/tags trigger a build: compile, check, test, package, distribute. In the final step (distribute), the package is pushed to an artifact repository.
+- **Continuous Integration** polls version control. Certain branches/tags trigger a build. The build has a series of steps: compile, check, test, package, distribute. In the final step (distribute), the package is pushed to an artifact repository.
 
 
-- **Continuous Deployment** picks up the new artifacts, and deploys them to a live environment.
+- **Continuous Deployment** picks up the new artifacts, and deploys them to a live environment. This may be done automatically via polling, or alternatively by manually performing a release action.
 
-Our primary focus for today is the **CI** phase.
+Our focus for today is the **CI** phase.
 
 
+#### Scope
 
-##### Scope
-
-Narrowing things down, the flow should work for any project with the following properties.
+For a plan to be concrete and actionable, we have to make some trade-offs. Our approach may work for different companies, teams and projects, but let's make it concrete and make some assumptions.
 
 - A **microservices architecture** is a fitting solution for the business problem.
 - A **single team** (two pizza rule) is responsible for the entire solution.
 - The team works on **vertical features**, spanning several microservices.
-- The team controls the **release cycle** and is empowered to customize CI/CD tools.
+- The team has full control of the **release cycle** and is empowered to customize CI/CD tools.
 
 
-One could raise plenty of questions about these assertions, but that's a different topic.
+In other words, we want to leverage microservices to our advantage in a small to medium sized company, which is not large enough to dedicate entire teams to one microservice.
 
+
+## Comparing CI approaches
+
+### Repository structure
+
+A popular practice for microservices is that each service should be individually developed, built and deployed. For many that means each microservice should live in its own repository, which integrates neatly with CI tools like GitLab, BitBucket and Travis. However, this is where we encounter a dilemma when we work on vertical features.
+
+- Each feature requires a branch for each affected repo. All these branches need to be kept in sync, and existing tools to manage multiple repos are complex and scarce.
+- Developers have to send out multiple merge requests for a single feature. Merges are not atomic: sometimes one merge might succeed while the other runs into a conflict.
+- Most code reviewing tools do not support diffs across multiple repositories.
+
+There are two solutions to this dilemma, both involving a single repository. We can either combine our service builds and release them under a shared version, or customize our CI tools to build microservices individually.
+
+### Combined build
+
+In a combined build strategy, every service in the platform is built for each triggering commit. After the build is done, the new version number is assigned to all services.
+
+This strategy has the advantage of being simple - interoperability between services is easy to guarantee and many cloud-hosted CI tools (GitLab, BitBucket, Travis) are ready to integrate with the repository. However, there are several drawbacks.
+
+- The more microservices there are in this build and the more commits are being made, the slower the CI feedback loop. 
+- The mentioned CI tools require a single build file and do not have great support for caching. This especially hurts for docker images and NPM packages. While this is not an argument against a combined build, it is an argument for using a more powerful CI tool that has persistent storage.
+- There is a false sense of security when doing zero-downtime releases. For a brief time during a release, a mix of services will run from the old and new version of the platform. Versioning a platform as a whole is not a complete guarantee for interoperability.
+- When doing A/B testing of different versions of a service, doing a full new release may interrupt the running A/B test even if both services A and B are unchanged.
+
+### Separate builds
+
+Building microservices individually requires a little more setup. 
+
+- Microservices are organized into folders.
+- Each service folder has it's own version file.
+- Services are self-contained and have no code-level dependencies outside their folder. Libraries can exist outside the folder if they are versioned.
+- In order to support separate builds, we need a more powerful CI tool like `TeamCity` or `Jenkins`, which allow separating builds cleanly and support triggers based on subfolders.
+- Builds trigger when anything in the microservice folder has changed.
+- Builds triggered by development branches create `<service-name>:<service-version>-SNAPSHOT-<buildnr>` images.
+- Builds triggered by test branches create `<service-name>:latest` images.
+- Builds triggered by tags create `<service-name>:<service-version>` images.
+
+The advantage of this approach is the microservice mantra: services are independently versioned and deployed, small changes are easy to push and the system scales up well with many microservices and many developers.
+
+The approach also has some drawbacks.
+
+- Versioning becomes an action as part of the development process, rather than the release process. Discipline is required to correctly version services.
+- Interoperability is more complex. Does service `a:4` work with `b:6` and `c:3`? If we need to roll back to `c:2`, do we also need to roll back to `b:5`? Or `b:4`? Can we release `c:4` before `a:5`? These are questions we should constantly be aware of while implementing features. While backwards compatibility is a good thing, it can make development more difficult.
 
 
 ### Versioning
 
-In any CI/CD solution, releases are ultimately triggered by code changes. These changes may be either backwards compatible or backwards incompatible. This is a judgement call that can typically not be made by automated code analysis. This is why an incompatible change should carry a version number as part of the change: setting the version at a later time has more room for error. 
+Versions for software packages say something about its backwards compatibility. Whether code is backwards compatible is a judgement call that can typically not be made by automated  analysis, so developers at some point need to make a conscious choice to update the version number.
 
-The keyword here is "change". What is the most effective unit of change to use? An often-cited argument for microservices is that they should be self-contained and therefore have their own release cycle. That means they have their own version number. 
-
-On the other hand, there is the "less pure" option of versioning the solution as a whole, building and deploying all microservices at once with each release. Both options have their pros and cons. 
+The more time between the change and its corresponding version bump, the more room for confusion and error about which version is which. Therefore, a feature implementation that carries an incompatible change should receive a new version number as part of the change. The ideal time to bump a version number is when creating a feature branch.
 
 
+## Conclusion
 
-##### Service-based
-
-Consider a situation where we version each service individually.
-
-- Faster builds, small releases. Only services that change need to be redeployed.
-- More versatile. One service may keep running its A/B test while the other gets a new release C.
-- More complexity. Will service `a:4` work with `b:6` and `c:3`? If we need to roll back to `c:2`, do we also need to roll back to `b:5`? Or `b:4`? Can we release `c:4` before `a:5`?
-- Slightly more labor. A change might lead to multiple services getting a new version number.
+Weighing the pros and cons, we chose to migrate from a mono-repo strategy with a single build to a mono-repo strategy with separate builds. It provides more speed and control over the CI/CD pipeline and forces us to think about correct versioning and compatibility. We believe this method pays back the additional effort and complexity in terms of quality and flexibility.
 
 
-
-##### Solution-based
-
-Now consider a situation where the solution is versioned as a whole.
-
-- Slower builds, large releases. All services need to be redeployed when one service changes.
-- Less versatile. When an A/B test is running and a new release C is made, what happens?
-- Less complexity. Developers only need to take into account that `a:4` is compatible with `a:3`, `b:3` and `b:4`. It's easier to roll back the solution to a previous, known working state.
-- Less labor. Only one version number needs to be kept up-to-date.
-
-
-
-##### Our choice
-
-While having opted for the solution-based approach in the past, we chose to migrate to a service-based approach. We have to experiment to find out if the benefits are worth the extra complexity.
-
-
-### Repository
-
-For solution-based versioning, the choice for a repository is simple. If there is one version number and one build for all services, there should be one repository. When a commit is tagged, the CI server can build it under the current number.
-
-For service-based versioning we encounter a dilemma. Many sources recommend one repository per service, but that means:
-
-- multiple branches per feature,
-- multiple merges per feature,
-- multiple reviews per feature.
-
-This adds a lot of manual work and introduces potential conflicts because features are not atomic. When the team team is small and developers work on multiple services at once, this is a hassle. For example, for git there are no mature tools for managing multiple repositories at once, and submodules have their own set of problems.
-
-This led us to the choice a mono-repo, with a specific setup.
-
-- Services are organized into folders. 
-- Services are self-contained and have no dependencies in the repository, outside their folder.
-- Each service folder has it's own version file.
-- Builds trigger when anything in the folder has changed.
-- Builds on the `develop` branch create `<service-name>:<service-version>-SNAPSHOT-<buildnr>` images.
-- Builds on tags `release-<YYYYMMDD>` create `<service-name>:<service-version>` images.
-
-The downside is that, to support this process, we have to detect changes in folders. Many tools like `GitLab` and `BitBucket` do not support these type of builds, and force one to use a single build file for the entire repository. Hosting microservices in a mono-repo requires a more powerful tool like `TeamCity` or `Jenkins`.
-
-
-
-### Proof of concept
+## Proof of concept
 
 ##### Setting up TeamCity
 
@@ -177,7 +167,7 @@ For example, you could create a TeamCity build that pushes a specific major vers
 
 
 
-### References
+## References
 
 [1] https://12factor.net/codebase
 
