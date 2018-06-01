@@ -1,6 +1,6 @@
 # Effective CI with Microservices
 
-At Trifork Eindhoven, we have several teams developing microservice-based solutions for our customers. While each solution is different in terms of business domain, languages and tools, we observed that our release cycles were very similar. These similarities led us to look for a single, unified flow that we could use for all our future projects. 
+At work, we have several teams developing microservice-based solutions for our customers. While each solution is different in terms of business domain, languages and tools, we observed that our release cycles were very similar. These similarities led us to look for a single, unified flow that we could use for all our future projects. 
 
 #### Definitions
 
