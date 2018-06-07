@@ -1,6 +1,15 @@
 version: '3.2'
 
 services:
+  jenkins-server:
+    image: bitnami/jenkins:2.107.3-r22
+    ports:
+      - 8112:8080
+    volumes:
+      - ./jenkins_data:/bitnami
+    environment:
+      JENKINS_USERNAME: admin
+      JENKINS_PASSWORD: admin
   teamcity-server:
     image: jetbrains/teamcity-server
     ports:

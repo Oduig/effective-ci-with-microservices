@@ -32,13 +32,14 @@ In other words, we want to leverage microservices to our advantage in a small to
 
 ### Repository structure
 
-A popular practice for microservices is that each service should be individually developed, built and deployed. For many that means each microservice should live in its own repository, which integrates neatly with CI tools like GitLab, BitBucket and Travis. However, this is where we encounter a dilemma when we work on vertical features.
+A popular practice for microservices is that each service should be individually developed, built and deployed. [1] For many that means each microservice should live in its own repository, which integrates neatly with CI tools like GitLab, BitBucket and Travis. However, this is where we encounter a dilemma when we work on vertical features.
 
 - Each feature requires a branch for each affected repo. All these branches need to be kept in sync, and existing tools to manage multiple repos are complex and scarce.
 - Developers have to send out multiple merge requests for a single feature. Merges are not atomic: sometimes one merge might succeed while the other runs into a conflict.
 - Most code reviewing tools do not support diffs across multiple repositories.
 
-There are two solutions to this dilemma, both involving a single repository. We can either combine our service builds and release them under a shared version, or customize our CI tools to build microservices individually.
+There are two solutions to this dilemma, both involving a single repository. We can either combine our service builds and release them under a shared version, or customize our CI tools to build microservices individually. 
+There is some prior work in this area. [2][3]
 
 ### Combined build
 
@@ -46,8 +47,9 @@ In a combined build strategy, every service in the platform is built for each tr
 
 This strategy has the advantage of being simple - interoperability between services is easy to guarantee and many cloud-hosted CI tools (GitLab, BitBucket, Travis) are ready to integrate with the repository. However, there are several drawbacks.
 
-- The more microservices there are in this build and the more commits are being made, the slower the CI feedback loop. 
-- The mentioned CI tools require a single build file and do not have great support for caching. This especially hurts for docker images and NPM packages. While this is not an argument against a combined build, it is an argument for using a more powerful CI tool that has persistent storage.
+- All builds and build steps are specified in one file, which can get very large. [4]
+- The more microservices there are in this build and the more commits are being made, the slower the CI feedback loop.
+- The mentioned CI tools require a single build file and do not have great support for caching. This especially hurts for docker images and NPM packages. While this is not an argument against a combined build, it is an argument for using a more powerful CI tool that has persistent storage. [6]
 - There is a false sense of security when doing zero-downtime releases. For a brief time during a release, a mix of services will run from the old and new version of the platform. Versioning a platform as a whole is not a complete guarantee for interoperability.
 - When doing A/B testing of different versions of a service, doing a full new release may interrupt the running A/B test even if both services A and B are unchanged.
 
@@ -58,7 +60,7 @@ Building microservices individually requires a little more setup.
 - Microservices are organized into folders.
 - Each service folder has it's own version file.
 - Services are self-contained and have no code-level dependencies outside their folder. Libraries can exist outside the folder if they are versioned.
-- In order to support separate builds, we need a more powerful CI tool like `TeamCity` or `Jenkins`, which allow separating builds cleanly and support triggers based on subfolders.
+- In order to support separate builds, we need a more powerful CI tool like `TeamCity` or `Jenkins`, which allow separating builds cleanly and support triggers based on subfolders. [5]
 - Builds trigger when anything in the microservice folder has changed.
 - Builds triggered by development branches create `<service-name>:<service-version>-SNAPSHOT-<buildnr>` images.
 - Builds triggered by test branches create `<service-name>:latest` images.
@@ -85,6 +87,17 @@ Weighing the pros and cons, we chose to migrate from a mono-repo strategy with a
 
 
 ## Proof of concept
+
+### Using Jenkins (WIP)
+
+##### Setting up Jenkins
+
+1. Use the default set of plugins.
+2. Create a Pipeline build called `Example Project`.
+3. Point it to your fork of this repository.
+4. Build `*/master` and use the SCM Jenkinsfile at `microservice-1/Jenkinsfile`.
+
+### Using TeamCity
 
 ##### Setting up TeamCity
 
@@ -174,3 +187,9 @@ For example, you could create a TeamCity build that pushes a specific major vers
 [2] http://blog.shippable.com/our-journey-to-microservices-and-a-mono-repository
 
 [3] https://news.ycombinator.com/item?id=16166645
+
+[4] https://gitlab.com/gitlab-org/gitlab-ce/issues/18157
+
+[5] https://gitlab.com/gitlab-org/gitlab-ce/issues/19813
+
+[6] https://gitlab.com/gitlab-org/gitlab-ce/issues/17861

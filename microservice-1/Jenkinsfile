@@ -1,0 +1,20 @@
+pipeline {
+  agent any
+  stages {
+    stage('Build') {
+      steps {
+        sh 'docker build . -t foo'
+      }
+    }
+    stage('Test') {
+      steps {
+        // Test
+      }
+    }
+    stage('Distribute') {
+      steps {
+        // Distribute
+      }
+    }
+  }
+}
