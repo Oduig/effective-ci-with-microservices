@@ -8,7 +8,7 @@ pipeline {
     stage('Prepare') {
       steps {
         script {
-          env.VERSION=$(sed -r 's/\s+//g' $SERVICE_NAME/VERSION)
+          env.VERSION=$(sed -r 's/\\s+//g' $SERVICE_NAME/VERSION)
           env.IMAGE_NAME=$SERVICE_NAME:$VERSION
           env.IMAGE_TAG=$REGISTRY/$IMAGE_NAME
         }
