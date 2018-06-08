@@ -16,7 +16,9 @@ pipeline {
     }
     stage('Build') {
       steps {
-        sh 'docker build \$SERVICE_NAME -t \$IMAGE_TAG'
+        sh 'echo \$IMAGE_TAG'
+        sh 'echo $SERVICE_NAME'
+        sh 'docker build $SERVICE_NAME -t \$IMAGE_TAG'
       }
     }
     stage('Distribute') {
