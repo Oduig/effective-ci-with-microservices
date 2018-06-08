@@ -7,7 +7,7 @@ pipeline {
   stages {
     stage('Build') {
       steps {
-        sh 'VERSION=$(sed -r 's/\s+//g' $SERVICE_NAME/VERSION)'
+        sh 'VERSION=$(sed -r "s/\s+//g" $SERVICE_NAME/VERSION)'
         sh 'IMAGE_NAME=$SERVICE_NAME:$VERSION'
         sh 'IMAGE_TAG=$REGISTRY/$IMAGE_NAME'
         sh 'docker build $SERVICE_NAME -t $IMAGE_TAG'
