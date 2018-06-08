@@ -16,6 +16,10 @@ pipeline {
     }
     stage('Build') {
       steps {
+        sh 'echo $IMAGE_NAME'
+        sh "echo $IMAGE_NAME"
+        sh 'echo ${env.IMAGE_NAME}'
+        sh "echo ${env.IMAGE_NAME}"
         sh 'docker build $SERVICE_NAME -t $IMAGE_TAG'
       }
     }
