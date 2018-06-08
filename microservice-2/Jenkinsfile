@@ -9,19 +9,22 @@ pipeline {
       steps {
         script {
           env.VERSION=readFile("$SERVICE_NAME/VERSION").trim()
-          env.IMAGE_NAME="$SERVICE_NAME:$VERSION"
+          env.IMAGE_NAME="$SERVICE_NAME:$VERSION-SNAPSHOT-$BUILD_NUMBER"
           env.IMAGE_TAG="$REGISTRY/$IMAGE_NAME"
+          env.LATEST_TAG="$REGISTRY/$SERVICE_NAME"
         }
       }
     }
     stage('Build') {
       steps {
         sh "docker build $SERVICE_NAME -t $IMAGE_TAG"
+        sh "docker tag $IMAGE_TAG $LATEST_TAG"
       }
     }
     stage('Distribute') {
       steps {
         sh "docker push $IMAGE_TAG"
+        sh "docker push $LATEST_TAG"
       }
     }
   }
