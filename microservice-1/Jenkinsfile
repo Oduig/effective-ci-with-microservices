@@ -9,7 +9,7 @@ pipeline {
       steps {
         script {
           env.VERSION=readFile("$SERVICE_NAME/VERSION").trim()
-          env.IMAGE_NAME="$SERVICE_NAME:$VERSION-SNAPSHOT-%build.counter%"
+          env.IMAGE_NAME="$SERVICE_NAME:$VERSION-SNAPSHOT-$BUILD_NUMBER"
           env.IMAGE_TAG="$REGISTRY/$IMAGE_NAME"
           env.LATEST_TAG="$REGISTRY/$SERVICE_NAME"
         }
