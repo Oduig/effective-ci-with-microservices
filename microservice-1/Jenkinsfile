@@ -8,17 +8,17 @@ pipeline {
     stage('Prepare') {
       steps {
         script {
-          env.VERSION=readFile('\$SERVICE_NAME/VERSION').trim()
-          env.IMAGE_NAME='$SERVICE_NAME:\$VERSION'
-          env.IMAGE_TAG='\$REGISTRY/\$IMAGE_NAME'
+          env.VERSION=readFile("$SERVICE_NAME/VERSION").trim()
+          env.IMAGE_NAME="$SERVICE_NAME:$VERSION"
+          env.IMAGE_TAG="$REGISTRY/$IMAGE_NAME"
         }
       }
     }
     stage('Build') {
       steps {
-        sh 'echo \$IMAGE_TAG'
-        sh 'echo $SERVICE_NAME'
-        sh 'docker build $SERVICE_NAME -t \$IMAGE_TAG'
+        sh "echo $IMAGE_TAG"
+        sh "echo $SERVICE_NAME"
+        sh "docker build $SERVICE_NAME -t $IMAGE_TAG"
       }
     }
     stage('Distribute') {
