@@ -88,6 +88,10 @@ Weighing the pros and cons, we chose to migrate from a mono-repo strategy with a
 
 ## Proof of concept
 
+### Getting started
+
+1. Append the `hosts` file to the host mapping in your OS.
+
 ### Using Jenkins (WIP)
 
 ##### Setting up Jenkins
@@ -104,7 +108,6 @@ Weighing the pros and cons, we chose to migrate from a mono-repo strategy with a
 
 ##### Setting up TeamCity
 
-1. Append the `hosts` file to the host mapping in your OS.
 2. To run the build server, cd to `buildserver` and run `docker-compose up -d`. 
 3. Use the default directory and database settings.
 4. Create an `admin` account.
@@ -160,7 +163,7 @@ Weighing the pros and cons, we chose to migrate from a mono-repo strategy with a
    ```
 
 
-##### Performing a development build
+### Performing a development build
 
 1. Change the `VERSION` files in both microservices, commit and push the changes.
 2. Wait for the builds to complete.
@@ -168,14 +171,14 @@ Weighing the pros and cons, we chose to migrate from a mono-repo strategy with a
 4. If you want, try changing just one of the `VERSION` files and notice that only one build is started.
 
 
-##### Performing a release build
+### Performing a release build
 
 1. Tag a commit. The name of the tag could include your system-wide release verison, e.g. `release-myproject-v1` or `release-sprint-3`.
 2. Wait for the builds to complete.
 3. Check the `VERSION` file for `microservice-1` and run `docker pull docker-registry:5000/microservice-1:<VERSION>`. The release build should now be pulled.
 
 
-##### Continuous Deployment
+### Continuous Deployment
 
 Continuous Deployment is the next step in the chain. It should monitor the docker registry and launch new deployments based on a number of custom triggers.
 
