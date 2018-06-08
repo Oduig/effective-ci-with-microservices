@@ -1,6 +1,6 @@
 pipeline {
   environment {
-    SERVICE_NAME = "microservice-2"
+    SERVICE_NAME = 'microservice-2'
   }
   agent any
   stages {
