@@ -1,20 +1,31 @@
 pipeline {
+  environment {
+    REGISTRY = "docker-registry:5000"
+  }
   agent any
   stages {
-    stage('Build') {
+    stage('Microservice 1') {
       steps {
-        sh 'docker build microservice-1 -t foo'
-        sh 'docker build microservice-2 -t foo'
+        script {
+          env.SERVICE_NAME="microservice-1"
+          env.VERSION=readFile("$SERVICE_NAME/VERSION").trim()
+          env.IMAGE_NAME="$SERVICE_NAME:$VERSION"
+          env.IMAGE_TAG="$REGISTRY/$IMAGE_NAME"
+        }
+        sh "docker build $SERVICE_NAME -t $IMAGE_TAG"
+        sh "docker push $IMAGE_TAG"
       }
-    }
-    stage('Test') {
+    },
+    stage('Microservice 2') {
       steps {
-        echo 'Testing...'
-      }
-    }
-    stage('Distribute') {
-      steps {
-        echo 'Distributing...'
+        script {
+          env.SERVICE_NAME="microservice-2"
+          env.VERSION=readFile("$SERVICE_NAME/VERSION").trim()
+          env.IMAGE_NAME="$SERVICE_NAME:$VERSION"
+          env.IMAGE_TAG="$REGISTRY/$IMAGE_NAME"
+        }
+        sh "docker build $SERVICE_NAME -t $IMAGE_TAG"
+        sh "docker push $IMAGE_TAG"
       }
     }
   }

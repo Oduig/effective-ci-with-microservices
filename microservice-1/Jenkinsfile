@@ -16,8 +16,6 @@ pipeline {
     }
     stage('Build') {
       steps {
-        sh "echo $IMAGE_TAG"
-        sh "echo $SERVICE_NAME"
         sh "docker build $SERVICE_NAME -t $IMAGE_TAG"
       }
     }
