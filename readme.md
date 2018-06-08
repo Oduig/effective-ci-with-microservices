@@ -98,7 +98,7 @@ Weighing the pros and cons, we chose to migrate from a mono-repo strategy with a
 4. Point it to your fork of this repository.
 5. Build `master` and use the SCM Jenkinsfile at `microservice-1/Jenkinsfile`.
 6. Select `Polling ignores commits in certain paths`, and add an `Include Region` of `microservice-1/*`.
-6. Copy the Pipeline build `Microservice 1` and name it `Microservice 2`. Point it to `microservice-2/Jenkinsfile`.
+6. Copy the Pipeline build `Microservice 1` and replace the `1`s by `2`s.
 
 ### Using TeamCity
 
