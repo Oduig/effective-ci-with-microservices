@@ -8,7 +8,7 @@ pipeline {
     stage('Prepare') {
       steps {
         script {
-          env.VERSION=readFile('$SERVICE_NAME/VERSION').trim()
+          env.VERSION=readFile("$SERVICE_NAME/VERSION").trim()
           env.IMAGE_NAME='$SERVICE_NAME:$VERSION'
           env.IMAGE_TAG='$REGISTRY/$IMAGE_NAME'
         }
