@@ -100,8 +100,8 @@ Weighing the pros and cons, we chose to migrate from a mono-repo strategy with a
 2. Use the default set of plugins, in addition install the `PathIgnore` plugin.
 3. Create a Pipeline build called `Microservice 1`.
 4. Point it to your fork of this repository.
-5. Build `master` and use the SCM Jenkinsfile at `microservice-1/Jenkinsfile`.
-6. Select `Polling ignores commits in certain paths`, and add an `Include Region` of `microservice-1/*`.
+5. Build `master` and use the SCM Jenkinsfile at `microservice-1/Jenkinsfile`, disable `Lightweight checkout`.
+6. Select `Polling ignores commits in certain paths`, and add an `Include Region` of `microservice-1/.*`.
 7. Copy the Pipeline build `Microservice 1` and replace the `1`s by `2`s.
 8. Create a new `Release Build` which uses the root `Jenkinsfile` and is triggered on `/refs/tags/release-*`.
 
