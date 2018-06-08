@@ -1,7 +1,7 @@
 pipeline {
   environment {
-    SERVICE_NAME = 'microservice-1'
-    REGISTRY = 'docker-registry:5000'
+    SERVICE_NAME = "microservice-1"
+    REGISTRY = "docker-registry:5000"
   }
   agent any
   stages {
@@ -23,7 +23,7 @@ pipeline {
     }
     stage('Distribute') {
       steps {
-        sh 'docker push $IMAGE_TAG'
+        sh "docker push $IMAGE_TAG"
       }
     }
   }
