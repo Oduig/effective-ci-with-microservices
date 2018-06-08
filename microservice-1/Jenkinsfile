@@ -1,9 +1,12 @@
 pipeline {
+  environment {
+    SERVICE_NAME = "microservice-1"
+  }
   agent any
   stages {
     stage('Build') {
       steps {
-        sh 'docker build . -t foo'
+        sh 'docker build $SERVICE_NAME -t foo'
       }
     }
     stage('Test') {

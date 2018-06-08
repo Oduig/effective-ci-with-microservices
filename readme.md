@@ -92,10 +92,11 @@ Weighing the pros and cons, we chose to migrate from a mono-repo strategy with a
 
 ##### Setting up Jenkins
 
-1. Use the default set of plugins.
-2. Create a Pipeline build called `Example Project`.
-3. Point it to your fork of this repository.
-4. Build `*/master` and use the SCM Jenkinsfile at `microservice-1/Jenkinsfile`.
+1. Fetch the password with `docker exec -it buildserver_jenkins-server_1 cat var/jenkins_home/secrets/initialAdminPassword`
+2. Use the default set of plugins.
+3. Create a Pipeline build called `Microservice 1`.
+4. Point it to your fork of this repository.
+5. Build `master` and use the SCM Jenkinsfile at `microservice-1/Jenkinsfile`.
 
 ### Using TeamCity
 

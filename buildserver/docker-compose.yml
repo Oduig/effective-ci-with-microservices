@@ -2,14 +2,17 @@ version: '3.2'
 
 services:
   jenkins-server:
-    image: bitnami/jenkins:2.107.3-r22
+    build:
+      context: .
+      dockerfile: jenkins.Dockerfile
+      args:
+        REGISTRY_HOST: docker-registry:5000
+    privileged: true
     ports:
       - 8112:8080
     volumes:
-      - ./jenkins_data:/bitnami
-    environment:
-      JENKINS_USERNAME: admin
-      JENKINS_PASSWORD: admin
+      - /opt/jenkins:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
   teamcity-server:
     image: jetbrains/teamcity-server
     ports:
@@ -23,11 +26,11 @@ services:
       dockerfile: teamcity-agent.Dockerfile
       args:
         REGISTRY_HOST: docker-registry:5000
+    privileged: true
     environment:
       SERVER_URL: http://teamcity-server:8111
       TEAMCITY_SERVER_MEM_OPTS: -Xmx2g -XX:ReservedCodeCacheSize=350m
       DOCKER_IN_DOCKER: start
-    privileged: true
     volumes:
       - docker_volumes:/var/lib/docker
   docker-registry:
