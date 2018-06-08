@@ -15,7 +15,7 @@ pipeline {
         sh "docker build $SERVICE_NAME -t $IMAGE_TAG"
         sh "docker push $IMAGE_TAG"
       }
-    },
+    }
     stage('Microservice 2') {
       steps {
         script {
