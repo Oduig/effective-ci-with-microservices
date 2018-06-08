@@ -97,6 +97,7 @@ Weighing the pros and cons, we chose to migrate from a mono-repo strategy with a
 3. Create a Pipeline build called `Microservice 1`.
 4. Point it to your fork of this repository.
 5. Build `master` and use the SCM Jenkinsfile at `microservice-1/Jenkinsfile`.
+6. Copy the Pipeline build `Microservice 1` and name it `Microservice 2`. Point it to `microservice-2/Jenkinsfile`.
 
 ### Using TeamCity
 
