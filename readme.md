@@ -93,10 +93,11 @@ Weighing the pros and cons, we chose to migrate from a mono-repo strategy with a
 ##### Setting up Jenkins
 
 1. Fetch the password with `docker exec -it buildserver_jenkins-server_1 cat var/jenkins_home/secrets/initialAdminPassword`
-2. Use the default set of plugins.
+2. Use the default set of plugins, in addition install the `PathIgnore` plugin.
 3. Create a Pipeline build called `Microservice 1`.
 4. Point it to your fork of this repository.
 5. Build `master` and use the SCM Jenkinsfile at `microservice-1/Jenkinsfile`.
+6. Select `Polling ignores commits in certain paths`, and add an `Include Region` of `microservice-1/*`.
 6. Copy the Pipeline build `Microservice 1` and name it `Microservice 2`. Point it to `microservice-2/Jenkinsfile`.
 
 ### Using TeamCity
