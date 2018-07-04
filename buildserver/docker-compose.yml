@@ -13,26 +13,26 @@ services:
     volumes:
       - /opt/jenkins:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock
-  teamcity-server:
-    image: jetbrains/teamcity-server
-    ports:
-      - 8111:8111
-    volumes:
-      - ./tc_data_dir:/data/teamcity_server/datadir
-      - ./tc_log_dir:/opt/teamcity/logs
-  teamcity-agent:
-    build:
-      context: .
-      dockerfile: teamcity-agent.Dockerfile
-      args:
-        REGISTRY_HOST: docker-registry:5000
-    privileged: true
-    environment:
-      SERVER_URL: http://teamcity-server:8111
-      TEAMCITY_SERVER_MEM_OPTS: -Xmx2g -XX:ReservedCodeCacheSize=350m
-      DOCKER_IN_DOCKER: start
-    volumes:
-      - docker_volumes:/var/lib/docker
+#  teamcity-server:
+#    image: jetbrains/teamcity-server
+#    ports:
+#      - 8111:8111
+#    volumes:
+#      - ./tc_data_dir:/data/teamcity_server/datadir
+#      - ./tc_log_dir:/opt/teamcity/logs
+#  teamcity-agent:
+#    build:
+#      context: .
+#      dockerfile: teamcity-agent.Dockerfile
+#      args:
+#        REGISTRY_HOST: docker-registry:5000
+#    privileged: true
+#    environment:
+#      SERVER_URL: http://teamcity-server:8111
+#      TEAMCITY_SERVER_MEM_OPTS: -Xmx2g -XX:ReservedCodeCacheSize=350m
+#      DOCKER_IN_DOCKER: start
+#    volumes:
+#      - docker_volumes:/var/lib/docker
   docker-registry:
     image: registry:2
     ports:
